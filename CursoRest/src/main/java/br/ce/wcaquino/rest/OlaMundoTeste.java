@@ -29,7 +29,7 @@ public class OlaMundoTeste {
 		assertTrue(response.statusCode() == 200);
 		assertTrue("O status code deveria ser 200.", response.statusCode() == 200);
 		assertEquals(200, response.statusCode());// Primeiro parâmetro: Esperado - Segundo parâmetro: o que veio
-														// do site no método GET
+													// do site no método GET
 
 		ValidatableResponse validacao = response.then();
 		validacao.statusCode(200);
@@ -40,16 +40,16 @@ public class OlaMundoTeste {
 		Response response = request(Method.GET, "http://restapi.wcaquino.me/ola");
 		ValidatableResponse validacao = response.then();
 		validacao.statusCode(200);
-		
+
 		get("http://restapi.wcaquino.me/ola").then().statusCode(200);
-		
-		given()//Pré condições
-		.when() //Ação
-			.get("http://restapi.wcaquino.me/ola")
-		.then()//Assertivas
-			.statusCode(200);
+
+		given()// Pré condições
+				.when() // Ação
+				.get("http://restapi.wcaquino.me/ola").then()// Assertivas
+				.statusCode(200);
 
 	}
+
 	@Test
 	public void devoConhecerMacthersHamcrest() {
 		Assert.assertThat("Maria", Matchers.is("Maria"));
@@ -57,19 +57,32 @@ public class OlaMundoTeste {
 		Assert.assertThat(128, Matchers.isA(Integer.class));
 		Assert.assertThat(128d, Matchers.isA(Double.class));
 		Assert.assertThat(128d, Matchers.greaterThan(120d));
-		
-		List <Integer> impares = Arrays.asList(1,3,5,7,9);
+
+		List<Integer> impares = Arrays.asList(1, 3, 5, 7, 9);
 		assertThat(impares, hasSize(5));
-		assertThat(impares, contains(1,3,5,7,9));
-		assertThat(impares, containsInAnyOrder(1,3,5,9,7));
+		assertThat(impares, contains(1, 3, 5, 7, 9));
+		assertThat(impares, containsInAnyOrder(1, 3, 5, 9, 7));
 		assertThat(impares, hasItems(1));
-		assertThat(impares, hasItems(1,5));
-		
+		assertThat(impares, hasItems(1, 5));
+
 		assertThat("Maria", is(not("João")));
 		assertThat("Maria", not("João"));
 		assertThat("Luiz", anyOf(is("Maria"), is("Joaquina")));
 		assertThat("Joaquina", allOf(startsWith("Joa"), endsWith("ina"), containsString("quina")));
-		
+
+	}
+
+	@Test
+	public void devoValidarBody() {
+
+		given()
+			.when() 
+				.get("http://restapi.wcaquino.me/ola")
+			.then()
+				.statusCode(200)
+				.body(is("Ola Mundo!"))
+				.body(containsString("Mundo"))
+				.body(is(not(nullValue())));
 	}
 
 }
