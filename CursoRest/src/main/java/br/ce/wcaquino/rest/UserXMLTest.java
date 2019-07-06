@@ -11,6 +11,8 @@ import static org.hamcrest.Matchers.is;
 import java.util.ArrayList;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.restassured.RestAssured;
@@ -18,12 +20,24 @@ import io.restassured.internal.path.xml.NodeImpl;
 
 public class UserXMLTest {
 	
+	@BeforeClass
+	public static void setup() {
+		
+		//http porta 80
+		//https porta 443	
+		RestAssured.baseURI = "https://restapi.wcaquino.me";
+		RestAssured.port = 443;
+		//RestAssured.basePath = "/usersXML";
+		
+	}
+	
 	@Test
 	public void devoTrabalharComXML() {
 		
-		RestAssured.given()
+		given()
+			.log().all()
 			.when()
-				.get("https://restapi.wcaquino.me/usersXML/3")
+				.get("/usersXML/3")
 			.then()
 				.statusCode(200)
 				.rootPath("user")
@@ -48,7 +62,7 @@ public class UserXMLTest {
 		
 		given()
 			.when()
-				.get("https://restapi.wcaquino.me/usersXML")
+				.get("/usersXML")
 			.then()
 				.statusCode(200)
 				.body("users.user.size()", is(3))
@@ -67,7 +81,7 @@ public class UserXMLTest {
 		
 		ArrayList<NodeImpl> nomes = RestAssured.given()
 			.when()
-				.get("https://restapi.wcaquino.me/usersXML")
+				.get("/usersXML")
 			.then()
 				.statusCode(200)
 				.extract().path("users.user.name.findAll{it.toString().contains('n')}");	
@@ -84,7 +98,7 @@ public class UserXMLTest {
 		
 		given()
 			.when()
-				.get("https://restapi.wcaquino.me/usersXML")
+				.get("/usersXML")
 			.then()
 				.statusCode(200)
 				.body(hasXPath("count(/users/user)", is("3")))
