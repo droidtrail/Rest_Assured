@@ -1,7 +1,7 @@
 package br.ce.wcaquino.rest;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 import java.io.File;
 
@@ -38,6 +38,23 @@ public class FileTest {
 			.log().all()
 			.statusCode(200)
 			.body("name", is("Usuarios.pdf"))						
+	  ;			
+	}
+	
+	@Test
+	public void noaDdeveFazerUploadArquivoGrande() {
+		
+		given()
+			.log().all()
+			.multiPart("arquivo", new File("src/main/resources/ColegioPedroII.pdf"))
+			
+		.when()
+			.post("http://restapi.wcaquino.me/upload")
+		.then()
+			.log().all()
+			.time(lessThan(5000L))
+			.statusCode(413)
+									
 	  ;			
 	}
 }
