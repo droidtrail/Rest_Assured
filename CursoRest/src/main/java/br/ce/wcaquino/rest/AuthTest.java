@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.path.xml.XmlPath;
+import io.restassured.path.xml.XmlPath.CompatibilityMode;
 
 public class AuthTest {
 	
@@ -141,4 +143,43 @@ public class AuthTest {
 			.body("nome", hasItem("Conta Teste Rest Assured")) //hasItem para uma coleção de contas
 		;
 	}	
+	@Test
+	public void deveAcessarAplicacaoWeb() {
+		//Login
+		String cookie = given()
+			.log().all()
+			.formParam("email", "leandro.nares@gmail.com")
+			.formParam("senha", "123")
+			.contentType(ContentType.URLENC.withCharset("UTF-8"))
+		.when()
+			.post("http://seubarriga.wcaquino.me/logar")
+		.then()
+			.log().all()
+			.statusCode(200)
+			.extract().header("set-cookie")
+	    ;	
+		
+		cookie = cookie.split("=")[1].split(";")[0];
+		System.out.println(cookie);
+		
+		//Obter conta
+		
+		    String body = given()
+				.log().all()
+				.cookies("connect.sid",cookie)
+			.when()
+				.get("http://seubarriga.wcaquino.me/contas")
+			.then()
+				.log().all()
+				.statusCode(200)
+				.body("html.body.table.tbody.tr[0].td[0]", is("Conta Teste Rest Assured"))
+				.extract().body().asString();
+				
+		    ;
+				System.out.println("------------------------------------");
+		    	XmlPath xmlPath = new XmlPath(CompatibilityMode.HTML,body);
+				System.out.println(xmlPath.getString("html.body.table.tbody.tr[0].td[0]"));
+		
+	}
+	
 }
